@@ -7,4 +7,6 @@ Teachings from the book written by Donovan and Kernighan
 ## Requirements
 * [Go](https://golang.org/doc/install) >= 1.5
 
-[comment]: <> (* [direnv]&#40;https://direnv.net/&#41;)
+```shell
+git submodule update --init
+```
