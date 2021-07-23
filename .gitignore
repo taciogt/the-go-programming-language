@@ -16,3 +16,7 @@
 
 # IDE
 .idea
+.DS_Store
+
+# outputs
+**/exercise*/*.gif
