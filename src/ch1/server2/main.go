@@ -1,7 +1,7 @@
 // Server2 is a minimal "echo" and counter
 
-// server up: go run . server.go &
-// test: go run src/ch1/fetch/server.go http://localhost:8000/hello
+// server up: go run . main.go &
+// test: go run src/ch1/fetch/main.go http://localhost:8000/hello
 package main
 
 import (

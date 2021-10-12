@@ -1,8 +1,8 @@
 // handler echoes the http request
 
-// server up: go run . server.go &
-// test: go run src/ch1/fetch/server.go http://localhost:8000/hello
-// test: go run fetch/server.go http://localhost:8000/hello\?query\=123
+// server up: go run . main.go &
+// test: go run src/ch1/fetch/main.go http://localhost:8000/hello
+// test: go run fetch/main.go http://localhost:8000/hello\?query\=123
 package main
 
 import (
