@@ -15,3 +15,7 @@ How make the Go find the source files:
 ```shell
  export GOPATH=<repository path>  # e.g. /home/tacio/projects/the-go-programming-language 
 ```
+
+### Observations
+
+Exercises 3.7 to 3.9 ignored for now. 
