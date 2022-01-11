@@ -1,0 +1,6 @@
+this is an example file
+another file word
+file
+one two three
+two three zero
+three
