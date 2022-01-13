@@ -38,8 +38,7 @@ func add(t *tree, value int) *tree {
 	}
 	if value < t.value {
 		t.left = add(t.left, value)
-	}
-	else {
+	} else {
 		t.right = add(t.right, value)
 	}
 	return t
