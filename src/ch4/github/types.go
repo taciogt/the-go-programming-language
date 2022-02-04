@@ -6,7 +6,10 @@ import (
 	"time"
 )
 
-const IssuesURL = "https://api.github.com/search/issues"
+const (
+	baseURL   = "https://api.github.com"
+	IssuesURL = baseURL + "/search/issues"
+)
 
 type IssuesSearchResult struct {
 	TotalCount int `json:"total_count"`
@@ -23,7 +26,17 @@ type Issue struct {
 	Body      string    // in Markdown format
 }
 
+type CreateIssueBody struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+}
+
 type User struct {
 	Login   string
 	HTMLURL string `json:"html_url"`
+}
+
+type Authorization struct {
+	User  string
+	Token string
 }

@@ -20,3 +20,6 @@
 
 # outputs
 **/exercise*/*.gif
+
+.env
+/src/ch4/exercise11/test.sh

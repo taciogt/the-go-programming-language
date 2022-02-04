@@ -1,8 +1,13 @@
+// https://docs.github.com/en/rest/overview/other-authentication-methods#via-oauth-and-personal-access-tokens
+// https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
 package github
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -30,4 +35,38 @@ func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 	}
 	resp.Body.Close()
 	return &result, nil
+}
+
+// CreateIssue creates an issue on a given Github repository
+func CreateIssue(authorization Authorization, repo string, title string, description string) error {
+	client := &http.Client{}
+
+	createIssue := CreateIssueBody{Title: title, Body: description}
+	body, err := json.Marshal(createIssue)
+	if err != nil {
+		return err
+	}
+
+	url_ := fmt.Sprintf("%s/repos/%s/issues", baseURL, repo)
+	req, err := http.NewRequest("POST", url_, bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Accept", "application/vnd.github.v3+json")
+	req.Header.Add("Authorization", "Basic "+basicAuth(authorization.User, authorization.Token))
+
+	log.Printf("create issue request: url = %s, description = %v", req.URL, req.Body)
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	log.Printf("create issue response: status = %s", resp.Status)
+
+	return nil
+}
+
+func basicAuth(username, password string) string {
+	auth := username + ":" + password
+	return base64.StdEncoding.EncodeToString([]byte(auth))
 }
