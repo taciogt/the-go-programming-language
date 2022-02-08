@@ -9,6 +9,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"go-programming-language/src/ch4/github"
 	"log"
 	"os"
@@ -20,6 +21,8 @@ func main() {
 
 	var create bool
 	flag.BoolVar(&create, "create", false, "create an issue on github")
+	var list bool
+	flag.BoolVar(&list, "list", false, "list issues of a given repository")
 	var title string
 	flag.StringVar(&title, "title", "", "title to be used when creating the issue")
 	var body string
@@ -35,11 +38,11 @@ func main() {
 	log.Printf("repository: %s", repository)
 
 	if create {
-		log.Printf("creating issue operation")
+		log.Println("creating issue operation")
 		if title == "" {
 			log.Fatal("title must be provided for create operation")
 		}
-		log.Printf("title: %s", title)
+		log.Printf("title: %s\n", title)
 
 		if body == "" {
 			log.Fatal("body must be provided for create operation")
@@ -47,9 +50,20 @@ func main() {
 
 		err := github.CreateIssue(authorization, repository, title, body)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatal(err)
+		}
+	} else if list {
+		log.Printf("listing issues for repository %s\n", repository)
+
+		issues, err := github.ListIssues(repository)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, issue := range issues {
+			fmt.Printf("%+v\n", issue)
 		}
 	} else {
-		log.Fatal("no operation provided")
+		log.Fatal("ERROR: no operation provided")
 	}
 }

@@ -38,6 +38,7 @@ func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 }
 
 // CreateIssue creates an issue on a given Github repository
+// Github api: https://docs.github.com/en/rest/reference/issues#create-an-issue
 func CreateIssue(authorization Authorization, repo string, title string, description string) error {
 	client := &http.Client{}
 
@@ -64,6 +65,33 @@ func CreateIssue(authorization Authorization, repo string, title string, descrip
 	log.Printf("create issue response: status = %s", resp.Status)
 
 	return nil
+}
+
+// ListIssues list issues of given Github repository
+// Github api: https://docs.github.com/en/rest/reference/issues#list-repository-issues
+func ListIssues(repo string) ([]Issue, error) {
+	client := &http.Client{}
+	url_ := fmt.Sprintf("%s/repos/%s/issues", baseURL, repo)
+	req, err := http.NewRequest("GET", url_, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Accept", "application/vnd.github.v3+json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result []Issue
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
+		log.Printf("response status = %s", resp.Status)
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func basicAuth(username, password string) string {
