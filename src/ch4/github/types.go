@@ -17,6 +17,7 @@ type IssuesSearchResult struct {
 }
 
 type Issue struct {
+	ID        int
 	Number    int
 	HTMLURL   string `json:"html_url"`
 	Title     string
@@ -28,6 +29,11 @@ type Issue struct {
 
 type CreateIssueBody struct {
 	Title string `json:"title"`
+	Body  string `json:"body"`
+}
+
+type UpdateIssueBody struct {
+	Title string `json:"title,omitempty"`
 	Body  string `json:"body"`
 }
 

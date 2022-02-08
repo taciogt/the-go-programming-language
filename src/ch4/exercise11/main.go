@@ -20,13 +20,18 @@ func main() {
 	flag.StringVar(&repository, "repo", "", "github repository to interact with (taciogt/test-github-api)")
 
 	var create bool
-	flag.BoolVar(&create, "create", false, "create an issue on github")
+	flag.BoolVar(&create, "create", false, "creates an issue on github")
+	var update bool
+	flag.BoolVar(&update, "update", false, "updates an issue on github")
 	var list bool
-	flag.BoolVar(&list, "list", false, "list issues of a given repository")
+	flag.BoolVar(&list, "list", false, "lists issues of a given repository")
+
 	var title string
 	flag.StringVar(&title, "title", "", "title to be used when creating the issue")
 	var body string
 	flag.StringVar(&body, "body", "", "description for the issue")
+	var issueNumber int
+	flag.IntVar(&issueNumber, "number", 0, "issue number to be altered")
 
 	flag.Parse()
 
@@ -49,6 +54,16 @@ func main() {
 		}
 
 		err := github.CreateIssue(authorization, repository, title, body)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else if update {
+		log.Println("updating issue operation")
+		if issueNumber == 0 {
+			log.Fatal("issue number must be defined and different than 0")
+		}
+
+		err := github.UpdateIssue(authorization, repository, issueNumber, title, body)
 		if err != nil {
 			log.Fatal(err)
 		}

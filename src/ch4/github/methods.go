@@ -67,6 +67,35 @@ func CreateIssue(authorization Authorization, repo string, title string, descrip
 	return nil
 }
 
+// UpdateIssue updates an issue on a given Github repository
+// Github api: https://docs.github.com/en/rest/reference/issues#update-an-issue
+func UpdateIssue(authorization Authorization, repo string, issueNumber int, title string, description string) error {
+	client := &http.Client{}
+
+	createIssue := UpdateIssueBody{Title: title, Body: description}
+	body, err := json.Marshal(createIssue)
+	if err != nil {
+		return err
+	}
+
+	url_ := fmt.Sprintf("%s/repos/%s/issues/%d", baseURL, repo, issueNumber)
+	req, err := http.NewRequest("PATCH", url_, bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Accept", "application/vnd.github.v3+json")
+	req.Header.Add("Authorization", "Basic "+basicAuth(authorization.User, authorization.Token))
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("status = %s", resp.Status)
+		return err
+	}
+
+	return nil
+}
+
 // ListIssues list issues of given Github repository
 // Github api: https://docs.github.com/en/rest/reference/issues#list-repository-issues
 func ListIssues(repo string) ([]Issue, error) {
