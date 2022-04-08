@@ -1,9 +1,12 @@
 package xkcd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 )
 
 type ComicInfo struct {
@@ -26,7 +29,7 @@ func GetComicInfo(comicNumber int) (comicInfo ComicInfo, err error) {
 	if err != nil {
 		return
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode == http.StatusNotFound {
 		err = NewErrNotFound(comicNumber)
@@ -40,4 +43,51 @@ func GetComicInfo(comicNumber int) (comicInfo ComicInfo, err error) {
 	}
 
 	return
+}
+
+func ListAllComics() chan ComicInfo {
+	comics := make(chan ComicInfo)
+	go listComics(comics)
+	return comics
+}
+
+func listComics(ch chan ComicInfo) {
+	var comicInfo ComicInfo
+	var err error
+
+	//for i := 1; err == nil; i++ {
+	for i := 1; err == nil && i < 100; i++ {
+		comicInfo, err = GetComicInfo(i)
+		if err != nil {
+			//fmt.Printf("error=%s", err)
+			if _, err := fmt.Fprintf(os.Stdout, "error=%s", err); err != nil {
+				panic(err)
+			}
+			close(ch)
+			return
+		}
+		ch <- comicInfo
+	}
+	close(ch)
+}
+
+func BuildIndex() error {
+	comics := make([]ComicInfo, 0)
+	for c := range ListAllComics() {
+		comics = append(comics, c)
+	}
+
+	comicsSerialized, err := json.Marshal(comics)
+	if err != nil {
+		return err
+	}
+	f, err := os.OpenFile("comics-index.json", os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+	if _, err = io.Copy(f, bytes.NewReader(comicsSerialized)); err != nil {
+		return err
+	}
+
+	return nil
 }
