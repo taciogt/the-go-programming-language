@@ -3,10 +3,13 @@ package xkcd
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type ComicInfo struct {
@@ -55,33 +58,46 @@ func listComics(ch chan ComicInfo) {
 	var comicInfo ComicInfo
 	var err error
 
-	//for i := 1; err == nil; i++ {
-	for i := 1; err == nil && i < 100; i++ {
+	for i := 1; err == nil; i++ {
+		if i == http.StatusNotFound {
+			continue // comic #404 do not exists
+		}
+
 		comicInfo, err = GetComicInfo(i)
 		if err != nil {
-			//fmt.Printf("error=%s", err)
-			if _, err := fmt.Fprintf(os.Stdout, "error=%s", err); err != nil {
-				panic(err)
+			if errors.Is(err, ErrNotFound{}) {
+				log.Printf("last comic found (#%d)\n", i-1)
+			} else {
+				if _, err := fmt.Fprintf(os.Stdout, "error=%s", err); err != nil {
+					panic(err)
+				}
 			}
 			close(ch)
 			return
 		}
+
 		ch <- comicInfo
 	}
 	close(ch)
 }
 
+const indexFileName = "comics-index.json"
+
 func BuildIndex() error {
 	comics := make([]ComicInfo, 0)
 	for c := range ListAllComics() {
 		comics = append(comics, c)
+
+		if c.Num%100 == 1 {
+			log.Printf("indexing comic #%d...\n", c.Num)
+		}
 	}
 
 	comicsSerialized, err := json.Marshal(comics)
 	if err != nil {
 		return err
 	}
-	f, err := os.OpenFile("comics-index.json", os.O_WRONLY|os.O_CREATE, 0644)
+	f, err := os.OpenFile(indexFileName, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}
@@ -90,4 +106,29 @@ func BuildIndex() error {
 	}
 
 	return nil
+}
+
+func LoadIndex() ([]ComicInfo, error) {
+	data, err := os.ReadFile(indexFileName)
+	if err != nil {
+		return nil, err
+	}
+	comics := make([]ComicInfo, 0)
+	if err := json.Unmarshal(data, &comics); err != nil {
+		return nil, err
+	}
+
+	return comics, nil
+}
+
+func SearchTerm(comics []ComicInfo, searchTerm string) ([]ComicInfo, error) {
+	result := make([]ComicInfo, 0)
+	searchTerm = strings.ToLower(searchTerm)
+
+	for i, c := range comics {
+		if strings.Contains(strings.ToLower(c.Title), searchTerm) {
+			result = append(result, comics[i])
+		}
+	}
+	return result, nil
 }

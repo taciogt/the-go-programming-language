@@ -1,38 +1,43 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"go-programming-language/src/ch4/exercise12/xkcd"
 )
 
 func main() {
-	comicInfo, err := xkcd.GetComicInfo(571)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("\nComic Info: %+v\n", comicInfo)
+	var buildIndex bool
+	flag.BoolVar(&buildIndex, "build", false, "build a local index with all available xkcd comics")
 
-	//listComics()
-	//comics, err := xkcd.ListAllComics()
-	//bw := bufio.NewWriter(os.Stdout)
-	//for comic := range xkcd.ListAllComics() {
-	//	if _, err := fmt.Fprintf(bw, "comic #%d: %s\n", comic.Num, comic.Title); err != nil {
-	//		panic(err)
-	//	}
-	//	//fmt.
-	//}
-	//if err := bw.Flush(); err != nil {
-	//	panic(err)
-	//}
-	if err := xkcd.BuildIndex(); err != nil {
-		panic(err)
+	var searchTerm string
+	flag.StringVar(&searchTerm, "search", "", "search for the argument on the ")
+
+	flag.Parse()
+
+	if buildIndex {
+		if err := xkcd.BuildIndex(); err != nil {
+			panic(err)
+		}
 	}
 
-	//comicInfo, err = xkcd.GetComicInfo(4000)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//fmt.Printf("\nComic Info: %+v", comicInfo)
+	if searchTerm != "" {
+		comics, err := xkcd.LoadIndex()
+		if err != nil {
+			panic(err)
+		}
+
+		comics, err = xkcd.SearchTerm(comics, searchTerm)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("-- comics found: --\n")
+		for _, c := range comics {
+			fmt.Printf("\nComic Info: %+v\n", c)
+		}
+
+	}
 
 }
 

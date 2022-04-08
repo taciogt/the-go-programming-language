@@ -13,3 +13,7 @@ func NewErrNotFound(num int) ErrNotFound {
 func (e ErrNotFound) Error() string {
 	return fmt.Sprintf("xkcd comic %d not found", e.Num)
 }
+
+func (e ErrNotFound) Is(target error) bool {
+	return target == ErrNotFound{}
+}
