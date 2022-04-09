@@ -23,4 +23,5 @@
 
 .env
 /src/ch4/exercise11/test.sh
+/src/ch4/exercise13/*.jpg
 comics-index.json
