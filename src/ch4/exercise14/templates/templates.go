@@ -4,32 +4,19 @@ import (
 	"bytes"
 	"go-programming-language/src/ch4/github"
 	"html/template"
-	"log"
-	"os"
 )
 
-type homeTemplateData struct {
+type listIssuesTemplateData struct {
 	RepositoryName string
 	Issues         []github.Issue
 }
 
-func GetHomeTemplate(issues []github.Issue) ([]byte, error) {
-	wd, err := os.Getwd()
+func ListIssuesTemplate(issues []github.Issue) ([]byte, error) {
+	t, err := template.ParseFiles("templates/list-issues.html")
 	if err != nil {
 		return nil, err
 	}
-	log.Print("working dir:", wd)
-
-	//bs, err := os.ReadFile("templates/home.html")
-	//if err != nil {
-	//	return nil, err
-	//}
-
-	t, err := template.ParseFiles("templates/home.html")
-	if err != nil {
-		return nil, err
-	}
-	data := homeTemplateData{
+	data := listIssuesTemplateData{
 		RepositoryName: "golang",
 		Issues:         issues,
 	}
@@ -38,6 +25,19 @@ func GetHomeTemplate(issues []github.Issue) ([]byte, error) {
 		return nil, err
 	}
 	return []byte(buf.String()), nil
+}
 
-	//return bs, nil
+func GetIssueTemplate(issue github.Issue) ([]byte, error) {
+	t, err := template.ParseFiles("templates/get-issue.html")
+	if err != nil {
+		return nil, err
+	}
+	data := map[string]interface{}{
+		"Issue": issue,
+	}
+	buf := bytes.Buffer{}
+	if err := t.Execute(&buf, data); err != nil {
+		return nil, err
+	}
+	return []byte(buf.String()), nil
 }

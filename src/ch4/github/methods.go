@@ -123,6 +123,35 @@ func ListIssues(repo string) ([]Issue, error) {
 	return result, nil
 }
 
+func GetIssue(repo string, issueNumber int) (result Issue, err error) {
+	log.Printf("getting issue #%d from repository %s\n", issueNumber, repo)
+	client := &http.Client{}
+	url_ := fmt.Sprintf("%s/repos/%s/issues/%d", baseURL, repo, issueNumber)
+	log.Println("getting url:", url_)
+
+	req, err := http.NewRequest("GET", url_, nil)
+	if err != nil {
+		return
+	}
+	req.Header.Add("Accept", "application/vnd.github.v3+json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	log.Println("response status:", resp.Status)
+
+	if err = json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return
+	}
+
+	log.Printf("found issue: %+v\n", result)
+
+	return
+}
+
 func basicAuth(username, password string) string {
 	auth := username + ":" + password
 	return base64.StdEncoding.EncodeToString([]byte(auth))

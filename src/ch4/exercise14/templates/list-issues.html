@@ -6,8 +6,13 @@
 </head>
 <body>
 
-<h1>Hello world! 2</h1>
-<p>{{.RepositoryName}}</p>
+<h1>{{.RepositoryName}} Issues</h1>
 <p>Issues quantity {{len .Issues}}</p>
+
+<ul>
+    {{range .Issues}}
+    <li><a href="/issues/{{.Number}}">#{{.Number}}</a> : {{.Title}}</li>
+    {{end}}
+</ul>
 </body>
 </html>
