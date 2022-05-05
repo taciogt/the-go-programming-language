@@ -25,11 +25,22 @@ func main() {
 				fmt.Println(trimmedContent)
 			}
 		}
+		if n.Type == html.ElementNode {
+			fmt.Println("_____", n.Data)
+			if n.Data == "img" {
+				for _, attr := range n.Attr {
+					if attr.Key == "src" {
+						fmt.Println("img content:", attr.Val)
+					}
+				}
+			}
+		}
 	})
 }
 
 // dfs executes a giver func on each node of a html tree, using a depth first search
 func dfs(n *html.Node, f func(n *html.Node)) {
+	//fmt.Println("******\n", n.Data, "\n******")
 	f(n)
 
 	if n.FirstChild != nil {
