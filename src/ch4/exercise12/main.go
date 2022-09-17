@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"go-programming-language/src/ch4/exercise12/xkcd"
+	"github.com/taciogt/go-programming-language/src/ch4/exercise12/xkcd"
 )
 
 func main() {

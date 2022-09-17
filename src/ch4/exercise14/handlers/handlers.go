@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"go-programming-language/src/ch4/exercise14/templates"
-	"go-programming-language/src/ch4/github"
+	"github.com/taciogt/go-programming-language/src/ch4/exercise14/templates"
+	"github.com/taciogt/go-programming-language/src/ch4/github"
 	"log"
 	"net/http"
 	"regexp"

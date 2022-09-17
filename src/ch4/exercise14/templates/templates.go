@@ -2,7 +2,7 @@ package templates
 
 import (
 	"bytes"
-	"go-programming-language/src/ch4/github"
+	"github.com/taciogt/go-programming-language/src/ch4/github"
 	"html/template"
 )
 

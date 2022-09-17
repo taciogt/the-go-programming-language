@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-programming-language/src/ch4/exercise14/handlers"
+	"github.com/taciogt/go-programming-language/src/ch4/exercise14/handlers"
 	"log"
 	"net/http"
 )

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go-programming-language/src/ch4/exercise13/omdbapi"
+	"github.com/taciogt/go-programming-language/src/ch4/exercise13/omdbapi"
 	"os"
 )
 

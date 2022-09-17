@@ -2,8 +2,8 @@
 package main
 
 import (
-	"ch2/exercise01/tempconv"
 	"fmt"
+	"github.com/taciogt/go-programming-language/src/ch2/exercise01/tempconv"
 	"os"
 	"strconv"
 )

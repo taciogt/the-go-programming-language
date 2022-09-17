@@ -4,7 +4,7 @@ package main
 
 import (
 	"fmt"
-	"go-programming-language/src/ch4/github"
+	"github.com/taciogt/go-programming-language/src/ch4/github"
 	"log"
 	"os"
 	"sort"
