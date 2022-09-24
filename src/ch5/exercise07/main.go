@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -61,15 +62,37 @@ var depth int
 func startElement(w io.Writer) func(*html.Node) {
 	return func(n *html.Node) {
 		if n.Type == html.ElementNode {
-			fmt.Fprintf(w, "%*s<%s>", depth*2, "", n.Data)
+			var b strings.Builder
+			b.WriteString(n.Data)
+
+			preAttr := " "
+			if len(n.Attr) > 0 {
+				writeAttr(&b, preAttr, n.Attr[0])
+			}
+
+			if len(n.Attr) > 1 {
+				preAttr = fmt.Sprintf("\n%*s", depth*2+2+len(n.Data), "")
+				for _, attr := range n.Attr[1:] {
+					writeAttr(&b, preAttr, attr)
+				}
+			}
+
+			_, _ = fmt.Fprintf(w, "%*s<%s>", depth*2, "", b.String())
 
 			if _, ok := multilineNodes[n.DataAtom]; ok {
-				fmt.Fprintf(w, "\n")
+				_, _ = fmt.Fprintf(w, "\n")
 			}
 			depth++
 		} else {
-			fmt.Fprintf(w, "%s", n.Data)
+			_, _ = fmt.Fprintf(w, "%s", n.Data)
 		}
+	}
+}
+
+func writeAttr(w io.Writer, preAttr string, attr html.Attribute) {
+	_, _ = fmt.Fprintf(w, "%s%s", preAttr, attr.Key)
+	if attr.Val != "" {
+		_, _ = fmt.Fprintf(w, "=\"%s\"", attr.Val)
 	}
 }
 
@@ -78,9 +101,9 @@ func endElement(w io.Writer) func(*html.Node) {
 		if n.Type == html.ElementNode {
 			depth--
 			if _, ok := multilineNodes[n.DataAtom]; ok {
-				fmt.Fprintf(w, "%*s</%s>\n", depth*2, "", n.Data)
+				_, _ = fmt.Fprintf(w, "%*s</%s>\n", depth*2, "", n.Data)
 			} else {
-				fmt.Fprintf(w, "</%s>\n", n.Data)
+				_, _ = fmt.Fprintf(w, "</%s>\n", n.Data)
 			}
 		}
 	}
